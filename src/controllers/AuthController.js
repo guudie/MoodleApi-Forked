@@ -8,7 +8,10 @@ module.exports = {
     let id = await nanoid();
     let password = await md5(req.body.password);
 
-    let newAccount = new account({ id: id, password: password });
+    let newAccount = new account({
+      id: id,
+      password: password,
+    });
     let newUser = new user({
       id: id,
       name: req.body.name,
@@ -24,15 +27,20 @@ module.exports = {
       await newAccount.save();
       await newUser.save();
 
-      res.send({
-        status: 200,
-        items: newUser,
+      res.status(200).send({
+        items: {
+          name: newUser.name,
+          email: newUser.email,
+          level: newUser.level,
+          user_id: newUser.user_id,
+          phone: "",
+          date_birth: "",
+          address: "",
+        },
         msg: "Đăng ký thành công",
       });
     } catch (error) {
-      res.send({
-        status: 500,
-        items: {},
+      res.status(500).send({
         msg: "Đăng ký thất bại",
       });
     }
@@ -41,25 +49,26 @@ module.exports = {
   async login(req, res) {
     let _user = await user.findOne({ email: req.body.email }).exec();
     if (_user === null) {
-      res.send({
-        status: 500,
-        items: {},
+      res.status(400).send({
         msg: "Người dùng không tồn tại",
       });
     } else {
       let _account = await account.findOne({ id: _user.id }).exec();
-      if (_account != null && _account.password === md5(req.body.password)) {
-        res.send({
-          status: 200,
-          items: { token: _user.id },
-          msg: "Đăng nhập thành công",
-        });
-      } else {
-        res.send({
-          status: 500,
-          items: {},
+      if (_account === null) {
+        res.status(500).send({
           msg: "Đăng nhập thất bại",
         });
+      } else {
+        if (_account.password === md5(req.body.password)) {
+          res.status(200).send({
+            items: { token: _account.token },
+            msg: "Đăng nhập thành công",
+          });
+        } else {
+          res.status(400).send({
+            msg: "Mật khẩu không chính xác",
+          });
+        }
       }
     }
   },
