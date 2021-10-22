@@ -14,45 +14,45 @@
 
 # Document
 
-```
 - Login: Api đăng nhập
-    + url: /auth/login
-    + method: POST
-    + params: {
-                email: <Địa chỉ enail>,
-                password: <Mật khẩu>
-            }
 
-    + result: {
-                msg: <Thông báo>,
-                items: {
-                    token: <Chỉ trả về token khi đăng nhập thành công>
-                }
-            }
+  - url: /auth/login
+  - method: POST
+  - params: {
+
+    - email: <Địa chỉ enail>,
+    - password: <Mật khẩu>
+      }
+
+  - result: {
+    - msg: <Thông báo>,
+    - items: {
+      - token: <Chỉ trả về token khi đăng nhập thành công>
+        }
+        }
 
 - Register: Api đăng ký tài khoản
-    + url: /auth/register
-    + method: POST
-    + params: {
-                name: <Tên người dùng>,
-                email: <Địa chỉ enail>,
-                level: <Mặc định = 0 | (0: Student, 1: Teacher)>,
-                user_id: <Mã số sinh viên (Đối với giáo viên là mã giáo viên)>,
-                password: <Mật khẩu>,
-            }
 
-    + result: {
-                msg: <Thông báo>,
-                items: {
-                    name: < >,
-                    email: < >,
-                    level: <>,
-                    user_id: < >,
-                    phone: "",
-                    date_birth: "",
-                    address: "",
-                }
-            }
+  - url: /auth/register
+  - method: POST
+  - params: {
 
+    - name: <Tên người dùng>,
+    - email: <Địa chỉ enail>,
+    - level: <Mặc định = 0 | (0: Student, 1: Teacher)>,
+    - user_id: <Mã số sinh viên (Đối với giáo viên là mã giáo viên)>,
+    - password: <Mật khẩu>,
+      }
 
-```
+  - result: {
+    - msg: <Thông báo>,
+    - items: {
+    - name: < >,
+    - email: < >,
+    - level: <>,
+    - user_id: < >,
+    - phone: "",
+    - date_birth: "",
+    - address: "",
+      }
+      }
