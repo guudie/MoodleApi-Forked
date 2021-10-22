@@ -16,14 +16,14 @@
 
 ```
 - Login: Api đăng nhập
-    - url: /auth/login
-    - method: POST
-    - params: {
+    + url: /auth/login
+    + method: POST
+    + params: {
                 email: <Địa chỉ enail>,
                 password: <Mật khẩu>
             }
 
-    - result: {
+    + result: {
                 msg: <Thông báo>,
                 items: {
                     token: <Chỉ trả về token khi đăng nhập thành công>
@@ -31,9 +31,9 @@
             }
 
 - Register: Api đăng ký tài khoản
-    - url: /auth/register
-    - method: POST
-    - params: {
+    + url: /auth/register
+    + method: POST
+    + params: {
                 name: <Tên người dùng>,
                 email: <Địa chỉ enail>,
                 level: <Mặc định = 0 | (0: Student, 1: Teacher)>,
@@ -41,7 +41,7 @@
                 password: <Mật khẩu>,
             }
 
-    - result: {
+    + result: {
                 msg: <Thông báo>,
                 items: {
                     name: < >,
