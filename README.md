@@ -18,41 +18,35 @@
 
   - url: /auth/login
   - method: POST
-  - params: {
+  - params:
 
     - email: <Địa chỉ enail>,
     - password: <Mật khẩu>
-      }
 
-  - result: {
+  - result:
     - msg: <Thông báo>,
-    - items: {
+    - items:
       - token: <Chỉ trả về token khi đăng nhập thành công>
-        }
-        }
 
 - Register: Api đăng ký tài khoản
 
   - url: /auth/register
   - method: POST
-  - params: {
+  - params:
 
     - name: <Tên người dùng>,
     - email: <Địa chỉ enail>,
     - level: <Mặc định = 0 | (0: Student, 1: Teacher)>,
     - user_id: <Mã số sinh viên (Đối với giáo viên là mã giáo viên)>,
     - password: <Mật khẩu>,
-      }
 
-  - result: {
+  - result:
     - msg: <Thông báo>,
-    - items: {
-    - name: < >,
-    - email: < >,
-    - level: <>,
-    - user_id: < >,
-    - phone: "",
-    - date_birth: "",
-    - address: "",
-      }
-      }
+    - items:
+      - name: < >,
+      - email: < >,
+      - level: <>,
+      - user_id: < >,
+      - phone: "",
+      - date_birth: "",
+      - address: "",
