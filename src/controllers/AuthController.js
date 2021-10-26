@@ -32,7 +32,6 @@ module.exports = {
           name: newUser.name,
           email: newUser.email,
           level: newUser.level,
-          user_id: newUser.user_id,
           phone: "",
           date_birth: "",
           address: "",

@@ -6,7 +6,6 @@ let userSchema = new Schema({
   name: String,
   email: String,
   level: String, // 0: Student, 1: Teacher
-  user_id: String,
   phone: String,
   date_birth: String,
   address: String,
