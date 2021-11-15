@@ -2,9 +2,40 @@ const { nanoid } = require("nanoid");
 const md5 = require("md5");
 const user = require("../collections/UserCollection");
 const account = require("../collections/AccountCollection");
+const { profile } = require("../validations/UserValidate");
 
 module.exports = {
-  async register(req, res) {
+  async profile(req, res) {
+    let token = req.headers.x_authorization;
+    let _account = await account.findOne({ id: token }).exec();
+
+    if (!_account) {
+      res.status(500).send({
+        msg: "User không tồn tại",
+      });
+    } else {
+      let _user = await user.findOne({ id: _account.id }).exec();
+      if (!_user) {
+        res.status(400).send({
+          msg: "Lỗi",
+        });
+      } else {
+        res.status(200).send({
+          items: {
+            name: _user.name,
+            email: _user.email,
+            level: _user.level,
+            phone: _user.phone,
+            date_birth: _user.date_birth,
+            address: _user.address,
+          },
+          msg: "Thành công",
+        });
+      }
+    }
+  },
+
+  async editProfile(req, res) {
     let id = await nanoid();
     let password = await md5(req.body.password);
 
@@ -42,33 +73,6 @@ module.exports = {
       res.status(500).send({
         msg: "Đăng ký thất bại",
       });
-    }
-  },
-
-  async login(req, res) {
-    let _user = await user.findOne({ email: req.body.email }).exec();
-    if (_user === null) {
-      res.status(400).send({
-        msg: "Người dùng không tồn tại",
-      });
-    } else {
-      let _account = await account.findOne({ id: _user.id }).exec();
-      if (_account === null) {
-        res.status(500).send({
-          msg: "Đăng nhập thất bại",
-        });
-      } else {
-        if (_account.password === md5(req.body.password)) {
-          res.status(200).send({
-            items: { token: _account.id },
-            msg: "Đăng nhập thành công",
-          });
-        } else {
-          res.status(400).send({
-            msg: "Mật khẩu không chính xác",
-          });
-        }
-      }
     }
   },
 };

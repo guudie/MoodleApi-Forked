@@ -50,3 +50,22 @@
       - phone: "",
       - date_birth: "",
       - address: "",
+
+- Get Profile: Lấy thông tin profile
+
+  - url: /user/profile
+  - method: GET
+  - heades:
+
+    - x_authorization: <token>,
+
+  - result:
+    - msg: <Thông báo>,
+    - items:
+      - name: < >,
+      - email: < >,
+      - level: <>,
+      - user_id: < >,
+      - phone: "",
+      - date_birth: "",
+      - address: "",
