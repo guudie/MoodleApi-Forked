@@ -3,9 +3,11 @@ const connection = require("../modules/connection");
 
 let courseSchema = new Schema({
   id: String,
-  name: String,
+  cate_id: String,
+  title: String,
+  short_title: String,
   description: String,
-  type: String,
+  image: String,
 });
 
 let course = connection.model("Course", courseSchema, "course");

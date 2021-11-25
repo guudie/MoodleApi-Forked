@@ -142,3 +142,15 @@
     - msg: <Thông báo>,
     - items:
       - email: < email mới >,
+
+- Get List Course: Lấy danh sách khóa học
+
+  - url: /course?category=${category_id} - 0: Lấy tất cả
+  - method: GET
+  - headers:
+
+    - x_authorization: <token>,
+
+  - result:
+    - msg: <Thông báo>,
+    - items:<Danh sách khóa học>,
