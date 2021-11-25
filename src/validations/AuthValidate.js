@@ -3,7 +3,10 @@ const regex = require("../modules/regex");
 
 module.exports = {
   async register(req, res, next) {
-    let invalid = await regex.checkInvalidRequest(["name", "email", "level", "password"], req.body);
+    let invalid = await regex.checkInvalidRequest(
+      ["name", "email", "level", "password"],
+      req.body
+    );
     if (!invalid) {
       res.status(400).send({
         msg: "Request không hợp lệ",
@@ -27,7 +30,10 @@ module.exports = {
   },
 
   async login(req, res, next) {
-    let invalid = await regex.checkInvalidRequest(["email", "password"], req.body);
+    let invalid = await regex.checkInvalidRequest(
+      ["email", "password"],
+      req.body
+    );
     if (!invalid) {
       res.status(400).send({
         msg: "Request không hợp lệ",
