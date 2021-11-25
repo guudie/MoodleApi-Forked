@@ -14,6 +14,8 @@
 
 # Document
 
+\*Note : Tất cả giá trị ở request và response đều dạng string
+
 - Login: Api đăng nhập
 
   - url: /auth/login
@@ -37,7 +39,6 @@
     - name: <Tên người dùng>,
     - email: <Địa chỉ enail>,
     - level: <Mặc định = 0 | (0: Student, 1: Teacher)>,
-    - user_id: <Mã số sinh viên (Đối với giáo viên là mã giáo viên)>,
     - password: <Mật khẩu>,
 
   - result:
@@ -45,8 +46,7 @@
     - items:
       - name: < >,
       - email: < >,
-      - level: <>,
-      - user_id: < >,
+      - level: < >,
       - phone: "",
       - date_birth: "",
       - address: "",
@@ -55,17 +55,90 @@
 
   - url: /user/profile
   - method: GET
-  - heades:
+  - headers:
 
     - x_authorization: <token>,
 
   - result:
     - msg: <Thông báo>,
     - items:
+      - name: ,
+      - email: < >,
+      - level: < >,
+      - phone: < >,
+      - date_birth: < >,
+      - address: < >,
+
+- Edit Profile: Sửa thông tin profile
+
+  - url: /user/edit
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+    - name: < >,
+    - phone: < >,
+    - date_birth: < >,
+    - address: < >,
+
+  - result:
+    - msg: <Thông báo>,
+    - items:
       - name: < >,
       - email: < >,
-      - level: <>,
-      - user_id: < >,
-      - phone: "",
-      - date_birth: "",
-      - address: "",
+      - level: < >,
+      - phone: < >,
+      - date_birth: < >,
+      - address: < >,
+
+- Change Password: Đổi password
+
+  - url: /user/changePassword
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+    - old_password: < >,
+    - new_password: < >,
+
+  - result:
+    - msg: <Thông báo>,
+    - items:
+      - status: "1", - Thành công
+
+- OTP: Lấy OTP
+
+  - url: /user/otp
+  - method: GET
+  - headers:
+
+    - x_authorization: <token>,
+
+  - result:
+    - msg: <Thông báo>,
+    - items:
+      - status: "1", - Thành công
+
+- Change Email: Đổi Email
+
+  - url: /user/changeEmail
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+    - otp: < >,
+    - new_email: < >,
+
+  - result:
+    - msg: <Thông báo>,
+    - items:
+      - email: < email mới >,

@@ -2,7 +2,7 @@ const { nanoid } = require("nanoid");
 const md5 = require("md5");
 const user = require("../collections/UserCollection");
 const account = require("../collections/AccountCollection");
-const { profile } = require("../validations/UserValidate");
+const { profile, changePass } = require("../validations/UserValidate");
 
 module.exports = {
   async profile(req, res) {
@@ -10,13 +10,14 @@ module.exports = {
     let _account = await account.findOne({ id: token }).exec();
 
     if (!_account) {
-      res.status(500).send({
+      res.status(400).send({
+        items: null,
         msg: "User không tồn tại",
       });
     } else {
       let _user = await user.findOne({ id: _account.id }).exec();
       if (!_user) {
-        res.status(400).send({
+        res.status(500).send({
           msg: "Lỗi",
         });
       } else {
@@ -35,43 +36,96 @@ module.exports = {
     }
   },
 
-  async editProfile(req, res) {
-    let id = await nanoid();
-    let password = await md5(req.body.password);
+  async otp(req, res) {
+    let token = req.headers.x_authorization;
+    let _account = await account.findOne({ id: token }).exec();
 
-    let newAccount = new account({
-      id: id,
-      password: password,
-    });
-    let newUser = new user({
-      id: id,
-      name: req.body.name,
-      email: req.body.email,
-      level: req.body.level,
-      user_id: req.body.user_id,
-      phone: "",
-      date_birth: "",
-      address: "",
-    });
-
-    try {
-      await newAccount.save();
-      await newUser.save();
-
-      res.status(200).send({
-        items: {
-          name: newUser.name,
-          email: newUser.email,
-          level: newUser.level,
-          phone: "",
-          date_birth: "",
-          address: "",
-        },
-        msg: "Đăng ký thành công",
+    if (!_account) {
+      res.status(400).send({
+        items: null,
+        msg: "User không tồn tại",
       });
-    } catch (error) {
-      res.status(500).send({
-        msg: "Đăng ký thất bại",
+    } else {
+      account.findOneAndUpdate(
+        { id: token },
+        { otp: "0000" },
+        { strict: false },
+        async () => {
+          res.status(200).send({
+            items: {
+              status: "1",
+            },
+            msg: "Thành công",
+          });
+        }
+      );
+    }
+  },
+
+  async edit(req, res) {
+    user.findOneAndUpdate(
+      { id: req.headers.x_authorization },
+      req.body,
+      {},
+      async () => {
+        let _user = await user
+          .findOne({ id: req.headers.x_authorization })
+          .exec();
+        res.status(200).send({
+          items: {
+            name: _user.name,
+            email: _user.email,
+            level: _user.level,
+            phone: _user.phone,
+            date_birth: _user.date_birth,
+            address: _user.address,
+          },
+          msg: "Thành công",
+        });
+      }
+    );
+  },
+
+  async changePassword(req, res) {
+    account.findOneAndUpdate(
+      { id: req.headers.x_authorization },
+      { password: await md5(req.body.new_password) },
+      {},
+      async () => {
+        res.status(200).send({
+          items: {
+            status: "1",
+          },
+          msg: "Thành công",
+        });
+      }
+    );
+  },
+
+  async changeEmail(req, res) {
+    let _user = await user.findOne({ email: req.body.new_email }).exec();
+
+    if (!_user) {
+      user.findOneAndUpdate(
+        { id: req.headers.x_authorization },
+        { email: req.body.new_email },
+        {},
+        async () => {
+          let _user = await user
+            .findOne({ id: req.headers.x_authorization })
+            .exec();
+          res.status(200).send({
+            items: {
+              email: _user.email,
+            },
+            msg: "Thành công",
+          });
+        }
+      );
+    } else {
+      res.status(400).send({
+        msg: "Email đã được sử dụng",
+        items: null,
       });
     }
   },
