@@ -44,8 +44,8 @@ module.exports = {
           items: null,
         });
       } else {
-        let invalid = await regex.checkInvalidRequest(["name"], req.body);
-        if (!invalid) {
+        let valid = await regex.checkValidRequest(["name"], req.body);
+        if (!valid) {
           res.status(400).send({
             msg: "Request không hợp lệ",
           });
@@ -78,11 +78,11 @@ module.exports = {
             msg: "Mật khẩu không chính xác",
           });
         } else {
-          let invalid = await regex.checkInvalidRequest(
+          let valid = await regex.checkValidRequest(
             ["old_password", "new_password"],
             req.body
           );
-          if (!invalid) {
+          if (!valid) {
             res.status(400).send({
               msg: "Request không hợp lệ",
             });
@@ -111,11 +111,11 @@ module.exports = {
           items: null,
         });
       } else {
-        let invalid = await regex.checkInvalidRequest(
+        let valid = await regex.checkValidRequest(
           ["otp", "new_email"],
           req.body
         );
-        if (!invalid) {
+        if (!valid) {
           res.status(400).send({
             msg: "Request không hợp lệ",
           });

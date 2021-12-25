@@ -143,9 +143,27 @@
     - items:
       - email: < email mới >,
 
-- Get List Course: Lấy danh sách khóa học
+- Get List Category: Lấy danh sách catrgory
+
+  - url: /course/categories
+  - method: GET
+
+  - result:
+    - msg: <Thông báo>,
+    - items:<Danh sách>,
+
+- Get List Course: Lấy danh sách khóa học theo catrgory
 
   - url: /course?category=${category_id} - 0: Lấy tất cả
+  - method: GET
+
+  - result:
+    - msg: <Thông báo>,
+    - items:<Danh sách khóa học>,
+
+- Get List Course Registered: Lấy danh sách khóa học đã đăng ký
+
+  - url: /course/registered
   - method: GET
   - headers:
 
@@ -154,3 +172,137 @@
   - result:
     - msg: <Thông báo>,
     - items:<Danh sách khóa học>,
+
+- Get List Course Related: Lấy danh sách khóa học liên quan
+
+  - url: /course/related
+  - method: GET
+  - headers:
+
+    - x_authorization: <token>, // có hoặc không
+
+  - result:
+    - msg: <Thông báo>,
+    - items:<Danh sách khóa học>,
+
+- Register Course: Đăng ký khóa học
+
+  - url: /course/register
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+  - course_id: < ID khóa học >,
+
+  - result:
+    - msg: <Thông báo>,
+
+- Unregister Course: Hủy đăng ký khóa học
+
+  - url: /course/unregister
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+    - course_id: < ID khóa học >,
+
+  - result:
+    - msg: <Thông báo>,
+
+- Get Course Detail: Lấy chi tiết khóa học
+
+  - url: /course/detail?course=< ID khóa học>
+  - method: GET
+  - headers:
+
+    - x_authorization: <token>, // có hoặc không
+
+  - result:
+    - msg: <Thông báo>,
+    - items:
+      - id: < ID khóa học>,
+      - cate_id: < ID category >,
+      - title: < tiêu đề khóa học >,
+      - short_title: < tiêu đề rút gọn >,
+      - description: < mô tả >,
+      - image: <>,
+      - registed: < đã đăng ký: 1, chưa: 0 >,
+      - num_register: < số người đăng ký >,
+      - editor: < quyền chỉnh sửa: 1. không: 0 >,
+      - teachers: < danh sách giáo viên >,
+      - intro: < mở đầu >,
+        - content: < nội dung >,
+        - video: < > // chưa hỗ trợ
+      - chapters: < danh sách chapter >,
+        -title: < tiêu đề >,
+        - content: < nội dung >,
+        - videoL <>, // chưa hỗ trợ
+      - comments: < danh sách bình luận >,
+        - id: < >,
+        - user_id: < >,
+        - name: < >,
+        - date: < dd/mm/YY >,
+        - time: < hh:mm >,
+        - content: < html >,
+
+- Edit Course Detail: chỉnh sửa khóa học
+
+  - url: /course/detail/edit
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+    - id: < ID khóa học>,
+    - cate_id: < ID category >,
+    - title: < tiêu đề khóa học >,
+    - short_title: < tiêu đề rút gọn >,
+    - description: < mô tả >,
+    - image: <>, // chưa hỗ trợ
+    - intro: < mở đầu >,
+      - content: < nội dung >,
+      - video: < > // chưa hỗ trợ
+    - chapters: < danh sách chapter >,
+      - title: < tiêu đề >,
+      - content: < nội dung >,
+      - videoL <>, // chưa hỗ trợ
+
+  - result:
+    - msg: <Thông báo>,
+    - items:
+
+- Create Course Detail: tạo khóa học
+
+  - url: /course/detail/create
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+    - id: < ID khóa học>,
+    - cate_id: < ID category >,
+    - title: < tiêu đề khóa học >,
+    - short_title: < tiêu đề rút gọn >,
+    - description: < mô tả >,
+    - image: <>, // chưa hỗ trợ
+    - intro: < mở đầu >,
+      - content: < nội dung >,
+      - video: < > // chưa hỗ trợ
+    - chapters: < danh sách chapter >,
+      - title: < tiêu đề >,
+      - content: < nội dung >,
+      - videoL <>, // chưa hỗ trợ
+
+  - result:
+    - msg: <Thông báo>,
+    - items:

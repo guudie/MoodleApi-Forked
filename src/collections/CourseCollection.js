@@ -8,6 +8,7 @@ let courseSchema = new Schema({
   short_title: String,
   description: String,
   image: String,
+  manager: Array,
 });
 
 let course = connection.model("Course", courseSchema, "course");
