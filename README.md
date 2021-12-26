@@ -309,7 +309,7 @@
 
 - Comment Course Detail:comment khóa học
 
-  - url: /course/detail/comment
+  - url: /course/comment
   - method: POST
   - headers:
 
@@ -325,7 +325,7 @@
 
 - Edit Comment Course Detail: chỉnh sửa comment khóa học
 
-  - url: /course/detail/edit-comment
+  - url: /course/edit-comment
   - method: POST
   - headers:
 
@@ -342,7 +342,7 @@
 
 - Delete Comment Course Detail: xóa comment khóa học
 
-  - url: /course/detail/delete-comment
+  - url: /course/delete-comment
   - method: POST
   - headers:
 
