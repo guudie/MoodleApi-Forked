@@ -162,7 +162,7 @@ module.exports = {
       }
     } else {
       let newRgsUser = new registedUser({
-        uer_id: userID,
+        user_id: userID,
         list: [{ course_id: courseID }],
       });
       await newRgsUser.save();
