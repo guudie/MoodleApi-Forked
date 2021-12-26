@@ -226,7 +226,9 @@ module.exports = {
     let _courseComment = await courseComment
       .findOne({ course_id: courseID })
       .exec();
-    let _comment = await getComment(_courseComment.comments);
+
+    let _comment = [];
+    if (_courseComment) _comment = await getComment(_courseComment.comments);
 
     let _manager = [];
 
@@ -277,7 +279,7 @@ module.exports = {
       for (let index = 0; index < _course.manager.length; index++) {
         let _id = _course.manager[index].user_id;
         let m_user = await user.findOne({ id: _id }).exec();
-        if (_user && _user.level == "999") {
+        if (m_user && m_user.level == "999") {
           _manager[index] = { id: _id, name: m_user.name };
         } else {
           _manager[index] = { name: m_user.name };
