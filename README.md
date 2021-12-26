@@ -253,7 +253,7 @@
 
 - Edit Course Detail: chỉnh sửa khóa học
 
-  - url: /course/detail/edit
+  - url: /course/edit
   - method: POST
   - headers:
 
@@ -261,7 +261,7 @@
 
   - params:
 
-    - id: < ID khóa học>,
+    - id: < ID khóa học >,
     - cate_id: < ID category >,
     - title: < tiêu đề khóa học >,
     - short_title: < tiêu đề rút gọn >,
@@ -281,7 +281,7 @@
 
 - Create Course Detail: tạo khóa học
 
-  - url: /course/detail/create
+  - url: /course/create
   - method: POST
   - headers:
 
@@ -306,3 +306,52 @@
   - result:
     - msg: <Thông báo>,
     - items:
+
+- Comment Course Detail:comment khóa học
+
+  - url: /course/detail/comment
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+    - course_id: < ID khóa học >,
+    - content: < Nội dung >
+
+  - result:
+    - msg: <Thông báo>
+
+- Edit Comment Course Detail: chỉnh sửa comment khóa học
+
+  - url: /course/detail/edit-comment
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+    - course_id: < ID khóa học >,
+    - id: < ID comment >,
+    - content: < Nội dung >
+
+  - result:
+    - msg: <Thông báo>
+
+- Delete Comment Course Detail: xóa comment khóa học
+
+  - url: /course/detail/delete-comment
+  - method: POST
+  - headers:
+
+    - x_authorization: <token>,
+
+  - params:
+
+    - course_id: < ID khóa học >,
+    - id: < ID comment >,
+
+  - result:
+    - msg: <Thông báo>

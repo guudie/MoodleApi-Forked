@@ -457,14 +457,201 @@ module.exports = {
     }
   },
 
-  async comment(req, res) {},
+  async comment(req, res) {
+    const token = req.headers.x_authorization;
+
+    let allow = 0;
+
+    let _account = await account.findOne({ id: token }).exec();
+    let _user = await user.findOne({ id: _account.id }).exec();
+    let _course = await course.findOne({ id: req.body.course_id }).exec();
+
+    if (!_course) {
+      res.status(400).send({
+        msg: "Khóa học không tồn tại",
+      });
+      return;
+    }
+
+    if (_user.level) {
+      if (_user == 1) {
+        let index = await _course.manager.findIndex(
+          (item) => item.user_id == _user.id
+        );
+
+        if (index >= 0) {
+          allow = 1;
+        }
+      } else {
+        allow = 1;
+      }
+    }
+
+    let checkRgsUser = await registedUser.findOne({ user_id: _user.id }).exec();
+    if (checkRgsUser) {
+      let index = await checkRgsUser.list.findIndex(
+        (item) => item.course_id == req.body.course_id
+      );
+
+      if (index >= 0) {
+        allow = 1;
+      } else {
+        res.status(400).send({
+          msg: "User chưa đăng ký khóa học.",
+        });
+        return;
+      }
+    } else {
+      res.status(400).send({
+        msg: "User chưa đăng ký khóa học.",
+      });
+      return;
+    }
+
+    if (allow) {
+      let _comment = await courseComment
+        .findOne({ course_id: req.body.course_id })
+        .exec();
+
+      const nanoid = customAlphabet("1234567890abcdef", 10);
+      let _id = await nanoid();
+
+      let date = new Date();
+
+      let _date = `${date.getDate()}/${
+        date.getMonth() + 1
+      }/${date.getFullYear()}`;
+      let _time = `${date.getHours()}:${date.getMinutes()}`;
+
+      let obj = {
+        id: _id,
+        user_id: _user.id,
+        date: _date,
+        time: _time,
+        content: req.body.content,
+      };
+
+      if (_comment) {
+        _comment.comments = [obj, ..._comment.comments];
+        _comment.save();
+      } else {
+        let newComment = new courseComment({
+          course_id: req.body.course_id,
+          comments: [obj],
+        });
+        newComment.save();
+      }
+      res.status(400).send({
+        msg: "Success",
+      });
+    } else {
+      res.status(400).send({
+        msg: "Permission denied.",
+      });
+    }
+  },
+
+  async editComment(req, res) {
+    const token = req.headers.x_authorization;
+
+    let _account = await account.findOne({ id: token }).exec();
+    let _user = await user.findOne({ id: _account.id }).exec();
+
+    let _comment = await courseComment
+      .findOne({ course_id: req.body.course_id })
+      .exec();
+
+    if (_comment) {
+      let index = await _comment.comments.findIndex(
+        (item) => item.id == req.body.id
+      );
+
+      if (index >= 0) {
+        if (_user.id == _comment.comments[index].user_id) {
+          let _listCmt = [..._comment.comments];
+          _listCmt[index].content = req.body.content;
+
+          _comment.comments = [];
+          await _comment.save();
+
+          _comment.comments = _listCmt;
+          await _comment.save();
+
+          res.status(200).send({
+            msg: "Success",
+          });
+        } else {
+          res.status(400).send({
+            msg: "Permission denied.",
+          });
+        }
+      } else {
+        res.status(400).send({
+          msg: "Comment not found.",
+        });
+      }
+    } else {
+      res.status(400).send({
+        msg: "Comment not found.",
+      });
+    }
+  },
+
+  async deleteComment(req, res) {
+    const token = req.headers.x_authorization;
+
+    let _account = await account.findOne({ id: token }).exec();
+    let _user = await user.findOne({ id: _account.id }).exec();
+
+    let _comment = await courseComment
+      .findOne({ course_id: req.body.course_id })
+      .exec();
+
+    if (_comment) {
+      let index = await _comment.comments.findIndex(
+        (item) => item.id == req.body.id
+      );
+
+      if (index >= 0) {
+        if (_user.id == _comment.comments[index].user_id) {
+          _comment.comments = await _comment.comments.filter(
+            (item) => item.id != req.body.id
+          );
+          await _comment.save();
+
+          res.status(200).send({
+            msg: "Success",
+          });
+        } else {
+          res.status(400).send({
+            msg: "Permission denied.",
+          });
+        }
+      } else {
+        res.status(400).send({
+          msg: "Comment not found.",
+        });
+      }
+    } else {
+      res.status(400).send({
+        msg: "Comment not found.",
+      });
+    }
+  },
 };
 
 async function getComment(arr) {
   let cmt = [];
   for (let index = 0; index < arr.length; index++) {
     let _user = await user.findOne({ id: arr[index].user_id }).exec();
-    cmt[index] = { ...arr[index], name: _user.name || "Incognito" };
+    cmt[index] = {
+      id: arr[index].id,
+      date: arr[index].date,
+      time: arr[index].time,
+      content: arr[index].content,
+      name: _user.name || "Incognito",
+      avatar: "",
+    };
   }
   return cmt;
 }

@@ -227,7 +227,71 @@ module.exports = {
         });
       } else {
         let valid = await regex.checkValidRequest(
-          ["user_id", "date", "time", "content"],
+          ["course_id", "content"],
+          req.body
+        );
+        if (!valid) {
+          res.status(400).send({
+            msg: "Request không hợp lệ",
+          });
+        } else {
+          next();
+        }
+      }
+    }
+  },
+
+  async editComment(req, res, next) {
+    const token = req.headers.x_authorization;
+
+    if (!token) {
+      res.status(400).send({
+        msg: "Chưa đăng nhập",
+        items: null,
+      });
+    } else {
+      let _account = await account.findOne({ id: token }).exec();
+
+      if (!_account) {
+        res.status(400).send({
+          msg: "User không tồn tại",
+          items: null,
+        });
+      } else {
+        let valid = await regex.checkValidRequest(
+          ["course_id", "id", "content"],
+          req.body
+        );
+        if (!valid) {
+          res.status(400).send({
+            msg: "Request không hợp lệ",
+          });
+        } else {
+          next();
+        }
+      }
+    }
+  },
+
+  async deleteComment(req, res, next) {
+    const token = req.headers.x_authorization;
+
+    if (!token) {
+      res.status(400).send({
+        msg: "Chưa đăng nhập",
+        items: null,
+      });
+    } else {
+      let _account = await account.findOne({ id: token }).exec();
+
+      if (!_account) {
+        res.status(400).send({
+          msg: "User không tồn tại",
+          items: null,
+        });
+      } else {
+        let valid = await regex.checkValidRequest(
+          ["course_id", "id"],
           req.body
         );
         if (!valid) {

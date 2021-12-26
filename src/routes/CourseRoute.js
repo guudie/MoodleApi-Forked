@@ -18,5 +18,10 @@ router.post(
 router.post("/edit", validate.edit, controller.edit);
 router.post("/create", validate.create, controller.create);
 router.post("/comment", validate.comment, controller.comment);
-
+router.post("/edit-comment", validate.editComment, controller.editComment);
+router.post(
+  "/delete-comment",
+  validate.deleteComment,
+  controller.deleteComment
+);
 module.exports = router;
