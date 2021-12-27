@@ -301,7 +301,7 @@ module.exports = {
             description: _course.description,
             image: method.getImgDrive(_course.image),
             registed: 1,
-            num_register: rgsCourse.list.length,
+            num_register: rgsCourse ? rgsCourse.list.length : 0,
             editor: _editor,
             teachers: _manager,
             intro: _detail.intro,
@@ -323,7 +323,7 @@ module.exports = {
             description: _course.description,
             image: method.getImgDrive(_course.image),
             registed: 0,
-            num_register: rgsCourse.list.length,
+            num_register: rgsCourse ? rgsCourse.list.length : 0,
             editor: 0,
             teachers: _manager,
             intro: _detail.intro,
@@ -431,7 +431,7 @@ module.exports = {
       newCourse.save();
       newDetail.save();
 
-      res.status(400).send({
+      res.status(200).send({
         msg: "Success",
         items: {
           id: newCourse.id,
@@ -543,7 +543,7 @@ module.exports = {
         });
         newComment.save();
       }
-      res.status(400).send({
+      res.status(200).send({
         msg: "Success",
       });
     } else {

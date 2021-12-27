@@ -1,5 +1,7 @@
 module.exports = {
   getImgDrive(url) {
-    return `https://drive.google.com/uc?export=view&id=${url.split("/")[5]}`;
+    return url
+      ? `https://drive.google.com/uc?export=view&id=${url.split("/")[5]}`
+      : "";
   },
 };
