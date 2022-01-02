@@ -419,7 +419,7 @@ module.exports = {
         short_title: body.short_title,
         description: body.description,
         image: "",
-        manager: _user.level == 2 ? [{ user_id: _user.id }] : [],
+        manager: _user.level == 1 ? [{ user_id: _user.id }] : [],
       });
 
       let newDetail = new courseDetail({
@@ -444,7 +444,7 @@ module.exports = {
           num_register: 0,
           editor: 1,
           teachers:
-            _user.level == 2
+            _user.level == 1
               ? [{ name: _user.name }]
               : [{ id: _user.id, name: _user.name }],
           intro: newDetail.intro,
