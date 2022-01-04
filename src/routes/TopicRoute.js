@@ -6,6 +6,7 @@ const validate = require("../validations/TopicValidate");
 router.get("/", validate.list, controller.list);
 router.get("/detail", validate.detail, controller.detail);
 router.get("/tags", validate.tags, controller.tags);
+router.get("/comments", validate.getComments, controller.getComments);
 
 router.post("/edit", validate.edit, controller.edit);
 router.post("/create", validate.create, controller.create);
@@ -16,4 +17,8 @@ router.post(
   validate.deleteComment,
   controller.deleteComment
 );
+
+router.post("/like", validate.like, controller.like);
+router.post("/unlike", validate.unlike, controller.unlike);
+
 module.exports = router;

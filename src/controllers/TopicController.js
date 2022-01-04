@@ -16,15 +16,11 @@ module.exports = {
     if (filter == undefined) {
       _list = await topic.find().exec();
     } else {
-      _list = await topic
-        .find({ tags: { $elemMatch: { name: filter } } })
-        .exec();
+      _list = await topic.find({ tags: { $elemMatch: { name: filter } } }).exec();
     }
 
     for (let index = 0; index < _list.length; index++) {
-      let _comment = await topicComment
-        .findOne({ topic_id: _list[index].id })
-        .exec();
+      let _comment = await topicComment.findOne({ topic_id: _list[index].id }).exec();
       _list[index] = {
         id: _list[index].id,
         title: _list[index].title,
@@ -69,9 +65,11 @@ module.exports = {
       if (_account) {
         _user = await user.findOne({ id: _account.id }).exec();
 
-        _editor = _user.level == "999" || _user.id == _checkAuthor.id ? 1 : 0;
+        
 
-        _isLike = _topic.likes.findIndex((item) => item.id == _user.id);
+        _editor = _user.level == "999" || _checkAuthor && _user.id == _checkAuthor.id ? 1 : 0;
+
+        _isLike = _topic.likes.findIndex((item) => item.user_id == _user.id);
       }
 
       res.status(200).send({
@@ -87,11 +85,13 @@ module.exports = {
           likes: _topic.likes.length,
           isLike: _isLike >= 0 ? 1 : 0,
           editor: _editor,
-          comment: _comment,
+          comments:_comment? _comment.length: 0,
         },
       });
     }
   },
+
+
 
   async edit(req, res) {
     const token = req.headers.x_authorization;
@@ -106,13 +106,28 @@ module.exports = {
     if (body.title) _topic.title = body.title;
     if (body.description) _topic.description = body.description;
     if (body.content) _topic.content = body.content;
-    if (body.tags) _topic.tags = body.tags;
+    if (body.tags) {
+      let _tags = await body.tags.map((item) => {
+        return { name: item };
+      });
+  
+      for (let index = 0; index < _tags.length; index++) {
+        let tagItem = await tags.findOne({ name: _tags[index].name }).exec();
+        if (!tagItem) {
+          let tagID = await nanoid();
+          let newTag = new tags({ id: tagID, name: _tags[index].name });
+          newTag.save();
+        }
+      }
+
+      _topic.tags = _tags;
+    }
+
+   
 
     _topic.save();
 
-    let _editor = _user.level == "999" || _user.id == _checkAuthor.id ? 1 : 0;
-
-    let _isLike = _topic.likes.findIndex((item) => item.id == _user.id);
+    let _isLike = _topic.likes.findIndex((item) => item.user_id == _user.id);
 
     res.status(200).send({
       msg: "Success",
@@ -121,13 +136,13 @@ module.exports = {
         title: _topic.title,
         description: _topic.description,
         content: _topic.content,
-        author: _topic.author,
+        author:_user? _user.name: "",
         tags: _topic.tags,
         date: _topic.date,
         likes: _topic.likes.length,
         isLike: _isLike >= 0 ? 1 : 0,
-        editor: _editor,
-        comment: _comment,
+        editor: 1,
+        comments: _comment?_comment.length : 0,
       },
     });
   },
@@ -140,9 +155,7 @@ module.exports = {
     let _user = await user.findOne({ id: _account.id }).exec();
 
     let date = new Date();
-    let _date = `${date.getDate()}/${
-      date.getMonth() + 1
-    }/${date.getFullYear()}`;
+    let _date = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
     const nanoid = customAlphabet("1234567890abcdef", 11);
 
@@ -201,6 +214,85 @@ module.exports = {
     });
   },
 
+  async getComments(req, res) {
+    const token = req.headers.x_authorization;
+    const id = req.query.id;
+    let _comment = await topicComment.findOne({ topic_id: id }).exec();
+
+    if (_comment) {
+      comments = _comment.comments.map((item) => {
+        return {
+          content: item.content,
+          date: item.date,
+          id: item.id,
+          time: item.time,
+        };
+      });
+      for (let index = 0; index < comments.length; index++) {
+        let _user = await user.findOne({ id: _comment.comments[index].user_id }).exec();
+        if (_user) {
+          comments[index].user_name = _user.name;
+          if (token) {
+            comments[index].editor = token == comments[index].user_id ? 1 : 0;
+          }
+        } else {
+          comments[index].user_name = "Unknow";
+          comments[index].editor = 0;
+        }
+      }
+    }
+
+    res.status(200).send({
+      msg: "Success",
+      items: comments
+        ? {
+            topic_id: _comment.topic_id,
+            comments: comments,
+          }
+        : {},
+    });
+  }, 
+  
+  async getComments(req, res) {
+    const token = req.headers.x_authorization;
+    const id = req.query.id;
+    let _comment = await topicComment.findOne({ topic_id: id }).exec();
+
+    if (_comment) {
+      comments = _comment.comments.map((item) => {
+        return {
+          content: item.content,
+          date: item.date,
+          id: item.id,
+          time: item.time,
+        };
+      });
+      for (let index = 0; index < comments.length; index++) {
+        let _user = await user.findOne({ id: _comment.comments[index].user_id }).exec();
+        if (_user) {
+          comments[index].user_name = _user.name;
+          if (token) {
+            comments[index].editor = token == _comment.comments[index].user_id ? 1 : 0;
+          }
+        } else {
+          comments[index].user_name = "Unknow";
+          comments[index].editor = 0;
+        }
+      }
+    }
+
+
+    res.status(200).send({
+      msg: "Success",
+      items: comments
+        ? {
+            topic_id: _comment.topic_id,
+            comments: comments,
+          }
+        : {},
+    });
+  },
+
   async comment(req, res) {
     const token = req.headers.x_authorization;
 
@@ -215,18 +307,14 @@ module.exports = {
       return;
     }
 
-    let _comment = await topicComment
-      .findOne({ topic_id: req.body.topic_id })
-      .exec();
+    let _comment = await topicComment.findOne({ topic_id: req.body.topic_id }).exec();
 
     const nanoid = customAlphabet("1234567890abcdef", 10);
     let _id = await nanoid();
 
     let date = new Date();
 
-    let _date = `${date.getDate()}/${
-      date.getMonth() + 1
-    }/${date.getFullYear()}`;
+    let _date = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     let _time = `${date.getHours()}:${date.getMinutes()}`;
 
     let obj = {
@@ -245,11 +333,22 @@ module.exports = {
         topic_id: req.body.topic_id,
         comments: [obj],
       });
-      newComment.save();
+     await newComment.save();
     }
     res.status(200).send({
       msg: "Success",
+      items: {
+        id: obj.id,
+        user_id: obj.user_id,
+        user_name: _user.name,
+        editor: 1,
+        date: obj.date,
+        time: obj.time,
+        content: obj.content,
+      }
     });
+
+  
   },
 
   async editComment(req, res) {
@@ -258,14 +357,10 @@ module.exports = {
     let _account = await account.findOne({ id: token }).exec();
     let _user = await user.findOne({ id: _account.id }).exec();
 
-    let _comment = await topicComment
-      .findOne({ topic_id: req.body.topic_id })
-      .exec();
+    let _comment = await topicComment.findOne({ topic_id: req.body.topic_id }).exec();
 
     if (_comment) {
-      let index = await _comment.comments.findIndex(
-        (item) => item.id == req.body.id
-      );
+      let index = await _comment.comments.findIndex((item) => item.id == req.body.id);
 
       if (index >= 0) {
         if (_user.id == _comment.comments[index].user_id) {
@@ -304,20 +399,14 @@ module.exports = {
     let _account = await account.findOne({ id: token }).exec();
     let _user = await user.findOne({ id: _account.id }).exec();
 
-    let _comment = await topicComment
-      .findOne({ topic_id: req.body.topic_id })
-      .exec();
+    let _comment = await topicComment.findOne({ topic_id: req.body.topic_id }).exec();
 
     if (_comment) {
-      let index = await _comment.comments.findIndex(
-        (item) => item.id == req.body.id
-      );
+      let index = await _comment.comments.findIndex((item) => item.id == req.body.id);
 
       if (index >= 0) {
         if (_user.id == _comment.comments[index].user_id) {
-          _comment.comments = await _comment.comments.filter(
-            (item) => item.id != req.body.id
-          );
+          _comment.comments = await _comment.comments.filter((item) => item.id != req.body.id);
           await _comment.save();
 
           res.status(200).send({
@@ -359,5 +448,62 @@ module.exports = {
       msg: "Success",
       items: _list,
     });
+  },
+
+  async like(req, res) {
+    const token = req.headers.x_authorization;
+
+    let _account = await account.findOne({ id: token }).exec();
+    let _user = await user.findOne({ id: _account.id }).exec();
+    let _topic = await topic.findOne({ id: req.body.topic_id }).exec();
+
+    if (!_topic) {
+      res.status(400).send({
+        msg: "Topic không tồn tại",
+      });
+      return;
+    }
+
+    let _checkLike = _topic.likes.findIndex(item => item.user_id == _user.id)
+    if (_checkLike >= 0){
+      res.status(200).send({
+        msg: "Liked!!!",
+      });
+    } else {
+      _topic.likes = [..._topic.likes, {user_id: _user.id}]
+      _topic.save();
+      res.status(200).send({
+        msg: "Success",
+      });
+    }
+  },
+
+  async unlike(req, res) {
+    const token = req.headers.x_authorization;
+
+    let _account = await account.findOne({ id: token }).exec();
+    let _user = await user.findOne({ id: _account.id }).exec();
+    let _topic = await topic.findOne({ id: req.body.topic_id }).exec();
+
+    if (!_topic) {
+      res.status(400).send({
+        msg: "Topic không tồn tại",
+      });
+      return;
+    }
+
+    let _checkLike = _topic.likes.findIndex(item => item.user_id == _user.id)
+    if (_checkLike >= 0){
+      _topic.likes = _topic.likes.filter(item => item.user_id != _user.id)
+      _topic.save();
+      res.status(200).send({
+        msg: "Success",
+      });
+      
+    } else {
+      res.status(200).send({
+        msg: "!!!",
+      });
+    }
   },
 };

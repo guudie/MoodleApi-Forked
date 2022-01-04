@@ -13,6 +13,10 @@ module.exports = {
     next();
   },
 
+  async getComments(req, res, next) {
+    next();
+  },
+
   async edit(req, res, next) {
     const token = req.headers.x_authorization;
     const id = req.body.id;
@@ -50,7 +54,8 @@ module.exports = {
             // Edit topic
             let _user = await user.findOne({ id: _account.id }).exec();
             // Check user
-            let _editor = user.level == "999" || _user.id == _checkAuthor.id;
+            let _checkAuthor = await user.findOne({ id: _topic.author }).exec();
+            let _editor = user.level == "999" || _checkAuthor &&  _user.id == _checkAuthor.id;
 
             if (_editor) {
               next();
@@ -192,5 +197,69 @@ module.exports = {
 
   async tags(req, res, next) {
     next();
+  },
+
+  async like(req, res, next) {
+     const token = req.headers.x_authorization;
+
+    if (!token) {
+      res.status(400).send({
+        msg: "Chưa đăng nhập",
+        items: null,
+      });
+    } else {
+      let _account = await account.findOne({ id: token }).exec();
+
+      if (!_account) {
+        res.status(400).send({
+          msg: "User không tồn tại",
+          items: null,
+        });
+      } else {
+        let valid = await regex.checkValidRequest(
+          ["topic_id"],
+          req.body
+        );
+        if (!valid) {
+          res.status(400).send({
+            msg: "Request không hợp lệ",
+          });
+        } else {
+          next();
+        }
+      }
+    }
+  },
+
+  async unlike(req, res, next) {
+     const token = req.headers.x_authorization;
+
+    if (!token) {
+      res.status(400).send({
+        msg: "Chưa đăng nhập",
+        items: null,
+      });
+    } else {
+      let _account = await account.findOne({ id: token }).exec();
+
+      if (!_account) {
+        res.status(400).send({
+          msg: "User không tồn tại",
+          items: null,
+        });
+      } else {
+        let valid = await regex.checkValidRequest(
+          ["topic_id"],
+          req.body
+        );
+        if (!valid) {
+          res.status(400).send({
+            msg: "Request không hợp lệ",
+          });
+        } else {
+          next();
+        }
+      }
+    }
   },
 };
