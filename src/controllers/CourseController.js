@@ -418,7 +418,7 @@ module.exports = {
         title: body.title,
         short_title: body.short_title,
         description: body.description,
-        image: "",
+        image: body.image,
         manager: _user.level == 1 ? [{ user_id: _user.id }] : [],
       });
 
